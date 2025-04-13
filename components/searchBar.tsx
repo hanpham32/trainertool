@@ -4,20 +4,24 @@ import { useEffect, useState, useRef } from "react";
 
 export default function SearchBar() {
   const [pokemonNames, setPokemonNames] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const suggestionRef = useRef(null);
-  const [showSugesstions, setShowSuggestions] = useState(false);
 
   // handles fetch pokemon from JSON file
   useEffect(() => {
     const fetchPokemonNames = async () => {
       try {
-        const response = await fetch('../data/pokemon-names.json');
+        const response = await fetch('/data/pokemon-names.json');
         if (!response.ok) {
           throw new Error("Failed to fetch pokemon names");
         }
         const data = await response.json();
         const names = data.pokemon_names || [];
         setPokemonNames(names);
+        setIsLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -39,21 +43,72 @@ export default function SearchBar() {
   }, []);
 
   // TODO filters suggestion based on input
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (value.trim()) {
+      const filteredSuggestions = pokemonNames
+        .filter(name => name.toLowerCase().includes(value.toLowerCase()))
+        .slice(0, 5);
+      setSuggestions(filteredSuggestions);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }
 
   // TODO helper function to capitalize first character
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   // TODO handles select a suggestion
+  const handleSelectSuggestion = (suggestion) => {
+    setSearchTerm(suggestion);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }
 
   // TODO handles key navigation in suggestions
+  const handleKeyDown = (e) => {
+    if (!showSuggestions) return;
+    const { key } = e;
+    if (key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  }
 
   return (
-    <div className="flex items-center p-2 bg-white dark:bg-gray-800 rounded-lg shadow w-1/3">
-      <Input
-        type="text"
-        placeholder="Pokemon name..."
-        className="flex-1 text-gray-900 dark:text-white bg-transparent border-none focus:ring-0 mr-2"
-      />
-      <SearchIcon className="text-gray-500 dark:text-gray-400" />
+    <div className="relative w-1/3">
+      <div className="flex items-center p-2 bg-white rounded-lg shadow">
+        <Input
+          type="text"
+          placeholder={isLoading ? "loading ..." : "search for a pokemon"}
+          className="flex-1 text-gray-900 bg-transparent border-none focus:ring-0 mr-2"
+          value={searchTerm}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => searchTerm.trim() && suggestions.length > 0 && setShowSuggestions(true)}
+          disabled={isLoading}
+        />
+        <SearchIcon className="text-gray-500" />
+      </div>
+      {showSuggestions && suggestions.length > 0 && (
+        <div ref={suggestionRef} className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto">
+          <ul className="py-1">
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => handleSelectSuggestion(suggestion)}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900"
+              >
+                {capitalizeFirstLetter(suggestion)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
