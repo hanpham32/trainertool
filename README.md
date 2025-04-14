@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Roadmap
+
+- [ ] mobile responsive
+  - [ ] search bar
+  - [ ] carousel
+  - [ ] types layout
+- [ ] UI
+  - [ ] find a better font..
+- [ ] features/fix
+  - [ ] correct weakness and resistance for pokemon of two types
+  - [ ] Gaia node integration
+
 ## Getting Started
 
 First, run the development server:
