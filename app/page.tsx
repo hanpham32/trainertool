@@ -1,16 +1,34 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PokemonTypeString } from "@/utils/PokemonType";
 import { PokemonType } from "@/utils/PokemonType";
 import { MyPokedex } from "@/utils/MyPokedex";
-import SearchBar from "@/components/searchBar";
+import SearchBar from "@/components/SearchBar";
+import PokeMMOSwitch from "@/components/PokeMMOSwitch";
+import { useSearch } from "@/contexts/SearchContext";
 
 export default function Home() {
   const myPokedex = new MyPokedex();
+  const { searchTerm, setSearchTerm } = useSearch();
   const [selectedTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
   const pokemonTypeInfo = PokemonType.getInstance();
-  const pokemon_ = myPokedex.getPokemonTypes(485);
+  const [pokemonJson, setPokemonJson] = useState(null);
+
+  useEffect(() => {
+    async function searchPokemon(searchTerm) {
+      if (searchTerm) {
+        try {
+          const response = await myPokedex.getPokemonByName(searchTerm);
+          setPokemonJson(response);
+          console.log(response);
+        } catch (error) {
+          console.error("Failed to fetch Pokemon:", error);
+        }
+      }
+    }
+    searchPokemon(searchTerm);
+  }, [searchTerm]);
 
   const pokemonTypes: PokemonTypeString[] = [
     "bug",
@@ -40,6 +58,13 @@ export default function Home() {
       setSelectedTypes([...selectedTypes, type]);
     } else {
       setSelectedTypes([selectedTypes[1], type]);
+    }
+  };
+
+  // TODO handles manual selection of types
+  const handleManualTypeSelection = (type: PokemonTypeString) => {
+    if (searchTerm) {
+      setSearchTerm("");
     }
   };
 

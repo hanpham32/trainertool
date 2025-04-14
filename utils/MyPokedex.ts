@@ -1,4 +1,5 @@
-import Pokedex from 'pokedex-promise-v2';
+import Pokedex, { Pokemon } from "pokedex-promise-v2";
+import { PokemonTypeString } from "./PokemonType";
 
 export class MyPokedex {
   public static P = new Pokedex();
@@ -7,28 +8,28 @@ export class MyPokedex {
   public async getPokemonByName(name_) {
     try {
       const pokemon_ = await MyPokedex.P.getPokemonByName(name_);
-      console.log(pokemon_)
-      return pokemon_
+      return pokemon_;
     } catch (error) {
-      throw error
-    }
-  }
-  
-  public async getPokemonTypes(id_) {
-    try {
-      const pokemon_ = await MyPokedex.P.getPokemonByName(id_);
-      const typeNames_ = pokemon_.types.map(typeInfo => typeInfo.type.name)
-      console.log("The pokemon type is:", typeNames_)
-      return typeNames_
-    } catch (error) {
-      throw error
+      throw error;
     }
   }
 
-  public async getPokemonCharacteristics(id_) {
+  public async getEVYield(pokemon: Pokemon) {
     try {
-      const pokemon_ = await MyPokedex.P.getCharacteristicById(id_);
-      return pokemon_
+      const evYield: { [statName: string]: number } = {};
+      for (const stat of pokemon.stats) {
+        evYield[stat.stat.name] = stat.effort;
+      }
+      return evYield;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async getPokemonTypes(pokemon: Pokemon): Promise<PokemonTypeString[]> {
+    try {
+      const typeNames_ = pokemon.types.map((typeInfo) => typeInfo.type.name);
+      return typeNames_ as PokemonTypeString[];
     } catch (error) {
       throw error;
     }

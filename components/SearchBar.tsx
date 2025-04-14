@@ -6,7 +6,8 @@ import { useEffect, useState, useRef } from "react";
 export default function SearchBar() {
   const [pokemonNames, setPokemonNames] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const {searchTerm, setSearchTerm} = useSearch();
+  const {searchTerm, setSearchTerm} = useSearch();  // the finalized search term
+  const [currentSearchTerm, setCurrentSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const suggestionRef = useRef(null);
@@ -46,7 +47,7 @@ export default function SearchBar() {
   // TODO filters suggestion based on input
   const handleInputChange = (e) => {
     const value = e.target.value;
-    setSearchTerm(value);
+    setCurrentSearchTerm(value);
     if (value.trim()) {
       const filteredSuggestions = pokemonNames
         .filter(name => name.toLowerCase().includes(value.toLowerCase()))
@@ -69,20 +70,25 @@ export default function SearchBar() {
     setSearchTerm(suggestion);
     setSuggestions([]);
     setShowSuggestions(false);
-    console.log('User searched for:', suggestion)
   }
 
   // TODO handles key navigation in suggestions
   const handleKeyDown = (e) => {
-    if (!showSuggestions) return;
     const { key } = e;
     if (key === 'Escape') {
       setShowSuggestions(false);
     }
     if (key === 'Enter') {
-      if (suggestions.length > 0) {
-        handleSelectSuggestion(suggestions[0])
-      }
+      e.preventDefault();
+      handleSearch();
+    }
+  }
+
+  // handles search when user hits "Enter" or Search icon
+  const handleSearch = () => {
+    if (currentSearchTerm.trim()) {
+      setSearchTerm(currentSearchTerm.trim());
+      setShowSuggestions(false);
     }
   }
 
@@ -93,13 +99,15 @@ export default function SearchBar() {
           type="text"
           placeholder={isLoading ? "loading ..." : "search for a pokemon"}
           className="flex-1 text-gray-900 bg-transparent border-none focus:ring-0 mr-2"
-          value={searchTerm}
+          value={currentSearchTerm}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => searchTerm.trim() && suggestions.length > 0 && setShowSuggestions(true)}
+          onFocus={() => currentSearchTerm.trim() && suggestions.length > 0 && setShowSuggestions(true)}
           disabled={isLoading}
         />
-        <SearchIcon className="text-gray-500" />
+        <div onClick={handleSearch} className="cursor-pointer">
+          <SearchIcon className="text-gray-500" />
+        </div>
       </div>
       {showSuggestions && suggestions.length > 0 && (
         <div ref={suggestionRef} className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto">
