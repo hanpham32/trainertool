@@ -113,13 +113,12 @@ export default function Home() {
         <div className="flex flex-wrap gap-2 mt-3">
           <h1 className="w-full text-3xl font-bold">EV Yields:</h1>
           {Object.entries(evYields).map(([statName, effortValue]) => {
-            // Only display badge if effort value is 1 or greater
-            if (effortValue >= 1) {
+            if ((effortValue as number) >= 1) {
               return (
                 <EffortBadge
                   key={statName}
                   type={statNameMap[statName]}
-                  value={effortValue}
+                  value={effortValue as number}
                 />
               );
             }
