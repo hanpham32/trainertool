@@ -66,7 +66,9 @@ export default function Home() {
   const handleManualTypeSelection = (type: PokemonTypeString) => {
     if (searchTerm) {
       setSearchTerm("");
+      setPokemonJson(null);
     }
+    toggleTypeSelection(type);
   };
 
   return (
@@ -90,7 +92,7 @@ export default function Home() {
             className={`flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${
               selectedTypes.includes(type) ? "bg-blue-100" : "hover:bg-gray-50"
             }`}
-            onClick={() => toggleTypeSelection(type)}
+            onClick={() => handleManualTypeSelection(type)}
           >
             <Image
               src={`/icons/${type}.svg`}
