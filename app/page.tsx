@@ -8,6 +8,7 @@ import SearchBar from "@/components/SearchBar";
 import PokeMMOSwitch from "@/components/PokeMMOSwitch";
 import { useSearch } from "@/contexts/SearchContext";
 import { Pokemon } from "pokedex-promise-v2";
+import { PokemonCarousel } from "@/components/PokemonCarousel";
 
 export default function Home() {
   const myPokedex = new MyPokedex();
@@ -15,16 +16,20 @@ export default function Home() {
   const [selectedTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
   const pokemonTypeInfo = PokemonType.getInstance();
   const [pokemonJson, setPokemonJson] = useState<Pokemon>(null);
+  const [pokemonImages, setPokemonImages] = useState<string[]>([])
 
   useEffect(() => {
     async function searchPokemon(searchTerm) {
       if (searchTerm) {
         try {
           const response = await myPokedex.getPokemonByName(searchTerm);
+          const imageUrls = await myPokedex.getAllImages(response);
+          setPokemonImages(imageUrls)
           setPokemonJson(response);
           console.log(response);
         } catch (error) {
           console.error("Failed to fetch Pokemon:", error);
+          setPokemonImages([]);
         }
       }
     }
@@ -74,14 +79,14 @@ export default function Home() {
   return (
     <div className="container mx-auto p-4">
       <SearchBar />
+      {pokemonImages.length > 0 ? (
+        <PokemonCarousel imageUrls={pokemonImages} />
+      ) : (
+        searchTerm && <p>No images found</p>
+      )}
       {pokemonJson && (
         <div>
-          <Image
-            src={pokemonJson.sprites.other["official-artwork"].front_default}
-            alt={`${pokemonJson.name} photo`}
-            height={200}
-            width={200}
-          />
+          <h1 className="text-3xl font-bold mb-6">{pokemonJson.name}</h1>
         </div>
       )}
       <h1 className="text-3xl font-bold mb-6">Pokemon Type Icons</h1>

@@ -14,6 +14,33 @@ export class MyPokedex {
     }
   }
 
+  public async getAllImages(pokemon: Pokemon) {
+    try {
+      const imageUrls: string[] = [];
+
+      // Helper function to recursively extract all URLs from the sprites object
+      const extractUrls = (obj: any) => {
+        if (!obj) return;
+
+        if (typeof obj === "string" && obj.startsWith("http")) {
+          imageUrls.push(obj);
+        } else if (typeof obj === "object") {
+          for (const key in obj) {
+            extractUrls(obj[key]);
+          }
+        }
+      };
+
+      // Start extracting from the sprites object
+      extractUrls(pokemon.sprites);
+
+      // Return array of all image URLs
+      return imageUrls;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async getEVYield(pokemon: Pokemon) {
     try {
       const evYield: { [statName: string]: number } = {};
