@@ -1,11 +1,12 @@
 "use client"
+import { useSearch } from "@/contexts/SearchContext";
 import { Input } from "./ui/input";
 import { useEffect, useState, useRef } from "react";
 
 export default function SearchBar() {
   const [pokemonNames, setPokemonNames] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const {searchTerm, setSearchTerm} = useSearch();
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const suggestionRef = useRef(null);
@@ -68,6 +69,7 @@ export default function SearchBar() {
     setSearchTerm(suggestion);
     setSuggestions([]);
     setShowSuggestions(false);
+    console.log('User searched for:', suggestion)
   }
 
   // TODO handles key navigation in suggestions
@@ -76,6 +78,11 @@ export default function SearchBar() {
     const { key } = e;
     if (key === 'Escape') {
       setShowSuggestions(false);
+    }
+    if (key === 'Enter') {
+      if (suggestions.length > 0) {
+        handleSelectSuggestion(suggestions[0])
+      }
     }
   }
 

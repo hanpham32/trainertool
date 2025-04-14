@@ -8,7 +8,6 @@ import SearchBar from "@/components/searchBar";
 
 export default function Home() {
   const myPokedex = new MyPokedex();
-  const [isIconHelp, setIsIconHelp] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
   const pokemonTypeInfo = PokemonType.getInstance();
   const pokemon_ = myPokedex.getPokemonTypes(485);
@@ -118,11 +117,6 @@ export default function Home() {
               ));
             })()}
           </div>
-        </div>
-      )}
-      {pokemon_ && (
-        <div>
-          <h2>{pokemon_.name}</h2>
         </div>
       )}
     </div>
