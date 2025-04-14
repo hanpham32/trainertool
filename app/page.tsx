@@ -23,13 +23,19 @@ export default function Home() {
       if (searchTerm) {
         try {
           const response = await myPokedex.getPokemonByName(searchTerm);
+
           const imageUrls = await myPokedex.getAllImages(response);
+          const types = await myPokedex.getPokemonTypes(response);
+
+          setSelectedTypes(types);
           setPokemonImages(imageUrls)
           setPokemonJson(response);
           console.log(response);
         } catch (error) {
           console.error("Failed to fetch Pokemon:", error);
           setPokemonImages([]);
+          setPokemonJson(null);
+          setSelectedTypes([]);
         }
       }
     }
