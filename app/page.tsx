@@ -7,13 +7,14 @@ import { MyPokedex } from "@/utils/MyPokedex";
 import SearchBar from "@/components/SearchBar";
 import PokeMMOSwitch from "@/components/PokeMMOSwitch";
 import { useSearch } from "@/contexts/SearchContext";
+import { Pokemon } from "pokedex-promise-v2";
 
 export default function Home() {
   const myPokedex = new MyPokedex();
   const { searchTerm, setSearchTerm } = useSearch();
   const [selectedTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
   const pokemonTypeInfo = PokemonType.getInstance();
-  const [pokemonJson, setPokemonJson] = useState(null);
+  const [pokemonJson, setPokemonJson] = useState<Pokemon>(null);
 
   useEffect(() => {
     async function searchPokemon(searchTerm) {
@@ -71,6 +72,16 @@ export default function Home() {
   return (
     <div className="container mx-auto p-4">
       <SearchBar />
+      {pokemonJson && (
+        <div>
+          <Image
+            src={pokemonJson.sprites.other["official-artwork"].front_default}
+            alt={`${pokemonJson.name} photo`}
+            height={200}
+            width={200}
+          />
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-6">Pokemon Type Icons</h1>
       <div className="w-1/2 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7">
         {pokemonTypes.map((type) => (
