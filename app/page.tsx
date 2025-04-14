@@ -9,6 +9,16 @@ import PokeMMOSwitch from "@/components/PokeMMOSwitch";
 import { useSearch } from "@/contexts/SearchContext";
 import { Pokemon } from "pokedex-promise-v2";
 import { PokemonCarousel } from "@/components/PokemonCarousel";
+import EffortBadge from "@/components/EffortBadge";
+
+const statNameMap = {
+  hp: "HP",
+  attack: "Attack",
+  defense: "Defense",
+  "special-attack": "Sp. Attack",
+  "special-defense": "Sp. Defense",
+  speed: "Speed",
+};
 
 export default function Home() {
   const myPokedex = new MyPokedex();
@@ -16,7 +26,8 @@ export default function Home() {
   const [selectedTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
   const pokemonTypeInfo = PokemonType.getInstance();
   const [pokemonJson, setPokemonJson] = useState<Pokemon>(null);
-  const [pokemonImages, setPokemonImages] = useState<string[]>([])
+  const [pokemonImages, setPokemonImages] = useState<string[]>([]);
+  const [evYields, setEvYields] = useState(null);
 
   useEffect(() => {
     async function searchPokemon(searchTerm) {
@@ -26,9 +37,12 @@ export default function Home() {
 
           const imageUrls = await myPokedex.getAllImages(response);
           const types = await myPokedex.getPokemonTypes(response);
+          const yields = await myPokedex.getEVYield(response);
+          console.log("yields:", yields);
 
           setSelectedTypes(types);
-          setPokemonImages(imageUrls)
+          setEvYields(yields);
+          setPokemonImages(imageUrls);
           setPokemonJson(response);
           console.log(response);
         } catch (error) {
@@ -93,6 +107,24 @@ export default function Home() {
       {pokemonJson && (
         <div>
           <h1 className="text-3xl font-bold mb-6">{pokemonJson.name}</h1>
+        </div>
+      )}
+      {evYields && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          <h1 className="w-full text-3xl font-bold">EV Yields:</h1>
+          {Object.entries(evYields).map(([statName, effortValue]) => {
+            // Only display badge if effort value is 1 or greater
+            if (effortValue >= 1) {
+              return (
+                <EffortBadge
+                  key={statName}
+                  type={statNameMap[statName]}
+                  value={effortValue}
+                />
+              );
+            }
+            return null;
+          })}
         </div>
       )}
       <h1 className="text-3xl font-bold mb-6">Pokemon Type Icons</h1>

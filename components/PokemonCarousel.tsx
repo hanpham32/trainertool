@@ -27,9 +27,8 @@ export function PokemonCarousel({imageUrls}: PokemonCarouselProps) {
                     <Image
                       src={imageUrl}
                       alt={`Pokemon image ${index + 1}`}
-                      fill
                       className="object-contain"
-                      sizes="(max-width: 768px) 100vw, 300px"
+                      fill
                     />
                   </div>
                 </CardContent>
