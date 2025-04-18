@@ -10,6 +10,7 @@ import { useSearch } from "@/contexts/SearchContext";
 import { Pokemon } from "pokedex-promise-v2";
 import { PokemonCarousel } from "@/components/PokemonCarousel";
 import EffortBadge from "@/components/EffortBadge";
+import { RotateCcw } from "lucide-react";
 
 const statNameMap = {
   hp: "HP",
@@ -96,9 +97,18 @@ export default function Home() {
     toggleTypeSelection(type);
   };
 
+  const handleResetTypeSelection = () => {
+    if (selectedTypes) {
+      setSelectedTypes([]);
+    }
+  }
+
   return (
     <div className="container mx-auto p-4">
-      <SearchBar />
+      <div className="flex items-center">
+        <SearchBar />
+        <RotateCcw className="mx-4 hover:cursor-pointer" onClick={handleResetTypeSelection}/>
+      </div>
       {pokemonImages.length > 0 ? (
         <PokemonCarousel imageUrls={pokemonImages} />
       ) : (
@@ -127,12 +137,12 @@ export default function Home() {
         </div>
       )}
       <h1 className="text-3xl font-bold mb-6">Pokemon Type Icons</h1>
-      <div className="w-1/2 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7">
+      <div className="w-1/2 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 p-2">
         {pokemonTypes.map((type) => (
           <div
             key={type}
-            className={`flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${
-              selectedTypes.includes(type) ? "bg-blue-100" : "hover:bg-gray-50"
+            className={`m-1 flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${
+              selectedTypes.includes(type) ? "bg-gray-200" : "hover:bg-gray-50"
             }`}
             onClick={() => handleManualTypeSelection(type)}
           >
@@ -141,7 +151,7 @@ export default function Home() {
               alt={`${type} type`}
               width={54}
               height={54}
-              className="transform transition-transform hover:scale-105 cursor-pointer"
+              className="transform transition-transform hover:scale-105 cursor-pointer mt-1"
             />
             <span className="mt-2">{type}</span>
           </div>
@@ -150,7 +160,7 @@ export default function Home() {
       {selectedTypes && (
         <div>
           <h1 className="text-3xl font-bold mb-6">Weakness</h1>
-          <div className="flex">
+          <div className="flex m-2">
             {(() => {
               const weaknesses = new Set<PokemonTypeString>();
 

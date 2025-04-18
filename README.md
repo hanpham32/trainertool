@@ -9,7 +9,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - [ ] UI
   - [ ] find a better font..
 - [ ] features/fix
-  - [ ] correct weakness and resistance for pokemon of two types
+  - [ ] fix: correct weakness and resistance for pokemon of two types
+  - [ ] search: find pokemons of certain yield types
+  - [ ] data: strengths
+  - [ ] data: where to find that wild pokemon
+  - [ ] data: what nature is preferred
+  - [ ] data: what base stat to improve
+  - [ ] data: move information
   - [ ] Gaia node integration
 
 ## Getting Started
