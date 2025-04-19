@@ -11,6 +11,7 @@ import { Pokemon } from "pokedex-promise-v2";
 import { PokemonCarousel } from "@/components/PokemonCarousel";
 import EffortBadge from "@/components/EffortBadge";
 import { RotateCcw } from "lucide-react";
+import TypeEffectivenessDisplay from "@/components/TypeEffectivenessDisplay";
 
 const statNameMap = {
   hp: "HP",
@@ -24,34 +25,36 @@ const statNameMap = {
 export default function Home() {
   const myPokedex = new MyPokedex();
   const { searchTerm, setSearchTerm } = useSearch();
-  const [selectedTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
+  const [currentTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
   const pokemonTypeInfo = PokemonType.getInstance();
   const [pokemonJson, setPokemonJson] = useState<Pokemon>(null);
   const [pokemonImages, setPokemonImages] = useState<string[]>([]);
   const [evYields, setEvYields] = useState(null);
 
   useEffect(() => {
-    async function searchPokemon(searchTerm) {
-      if (searchTerm) {
-        try {
-          const response = await myPokedex.getPokemonByName(searchTerm);
-
-          const imageUrls = await myPokedex.getAllImages(response);
-          const types = await myPokedex.getPokemonTypes(response);
-          const yields = await myPokedex.getEVYield(response);
-          console.log("yields:", yields);
-
-          setSelectedTypes(types);
-          setEvYields(yields);
-          setPokemonImages(imageUrls);
-          setPokemonJson(response);
-          console.log(response);
-        } catch (error) {
-          console.error("Failed to fetch Pokemon:", error);
-          setPokemonImages([]);
-          setPokemonJson(null);
-          setSelectedTypes([]);
+    async function searchPokemon(name) {
+      if (!name) return;
+      try {
+        const pokemon = await myPokedex.getPokemonByName(name);
+        if (!pokemon) {
+          resetPokemonData();
+          return;
         }
+        const [imageUrls, types, yields] = await Promise.all([
+          myPokedex.getAllImages(pokemon),
+          myPokedex.getPokemonTypes(pokemon),
+          myPokedex.getEVYield(pokemon),
+        ]);
+
+        setSelectedTypes(types);
+        setEvYields(yields);
+        setPokemonImages(imageUrls);
+        setPokemonJson(pokemon);
+      } catch (error) {
+        console.error("Failed to fetch Pokemon:", error);
+        setPokemonImages([]);
+        setPokemonJson(null);
+        setSelectedTypes([]);
       }
     }
     searchPokemon(searchTerm);
@@ -78,36 +81,45 @@ export default function Home() {
     "water",
   ];
 
-  const toggleTypeSelection = (type: PokemonTypeString) => {
-    if (selectedTypes.includes(type)) {
-      setSelectedTypes(selectedTypes.filter((t) => t !== type));
-    } else if (selectedTypes.length < 2) {
-      setSelectedTypes([...selectedTypes, type]);
+  const getNewTypeSelection = (currentTypes, clickedType) => {
+    if (currentTypes.includes(clickedType)) {
+      return currentTypes.filter((t) => t !== clickedType);
+    } else if (currentTypes.length < 2) {
+      return [...currentTypes, clickedType];
     } else {
-      setSelectedTypes([selectedTypes[1], type]);
+      return [currentTypes[1], clickedType];
     }
   };
 
   // TODO handles manual selection of types
-  const handleManualTypeSelection = (type: PokemonTypeString) => {
+  const handleTypeSelection = (type: PokemonTypeString) => {
     if (searchTerm) {
       setSearchTerm("");
       setPokemonJson(null);
     }
-    toggleTypeSelection(type);
+    setSelectedTypes(getNewTypeSelection(currentTypes, type));
   };
 
-  const handleResetTypeSelection = () => {
-    if (selectedTypes) {
-      setSelectedTypes([]);
-    }
-  }
+  const resetPokemonData = () => {
+    setPokemonImages([]);
+    setPokemonJson(null);
+    setEvYields(null);
+  };
+
+  const handleReset = () => {
+    setSearchTerm("");
+    setSelectedTypes([]);
+    resetPokemonData();
+  };
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex items-center">
         <SearchBar />
-        <RotateCcw className="mx-4 hover:cursor-pointer" onClick={handleResetTypeSelection}/>
+        <RotateCcw
+          className="mx-4 hover:cursor-pointer"
+          onClick={handleReset}
+        />
       </div>
       {pokemonImages.length > 0 ? (
         <PokemonCarousel imageUrls={pokemonImages} />
@@ -142,9 +154,9 @@ export default function Home() {
           <div
             key={type}
             className={`m-1 flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${
-              selectedTypes.includes(type) ? "bg-gray-200" : "hover:bg-gray-50"
+              currentTypes.includes(type) ? "bg-gray-200" : "hover:bg-gray-50"
             }`}
-            onClick={() => handleManualTypeSelection(type)}
+            onClick={() => handleTypeSelection(type)}
           >
             <Image
               src={`/icons/${type}.svg`}
@@ -157,57 +169,8 @@ export default function Home() {
           </div>
         ))}
       </div>
-      {selectedTypes && (
-        <div>
-          <h1 className="text-3xl font-bold mb-6">Weakness</h1>
-          <div className="flex m-2">
-            {(() => {
-              const weaknesses = new Set<PokemonTypeString>();
-
-              selectedTypes.forEach((type) => {
-                pokemonTypeInfo.getWeaknesses(type).forEach((weakness) => {
-                  weaknesses.add(weakness);
-                });
-              });
-
-              return Array.from(weaknesses).map((t) => (
-                <div key={t} className="flex flex-col items-center mr-2">
-                  <Image
-                    src={`/icons/${t}.svg`}
-                    alt={`${t} type`}
-                    width={54}
-                    height={54}
-                  />
-                  <span className="mt-2">{t}</span>
-                </div>
-              ));
-            })()}
-          </div>
-          <h1 className="text-3xl font-bold mb-6">Resistance</h1>
-          <div className="flex">
-            {(() => {
-              const resistances = new Set<PokemonTypeString>();
-
-              selectedTypes.forEach((type) => {
-                pokemonTypeInfo.getResistances(type).forEach((resistance) => {
-                  resistances.add(resistance);
-                });
-              });
-
-              return Array.from(resistances).map((t) => (
-                <div key={t} className="flex flex-col items-center mr-2">
-                  <Image
-                    src={`/icons/${t}.svg`}
-                    alt={`${t} type`}
-                    width={54}
-                    height={54}
-                  />
-                  <span className="mt-2">{t}</span>
-                </div>
-              ));
-            })()}
-          </div>
-        </div>
+      {currentTypes.length > 0 && (
+        <TypeEffectivenessDisplay selectedTypes={currentTypes} />
       )}
     </div>
   );
