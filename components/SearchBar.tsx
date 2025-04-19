@@ -93,7 +93,7 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="relative w-1/3 my-4">
+    <div className="relative my-4 w-full">
       <div className="flex items-center p-2 bg-white rounded-lg shadow">
         <Input
           type="text"

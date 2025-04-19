@@ -49,7 +49,7 @@ const TypeEffectivenessDisplay = ({
     calculateEffectiveness(selectedTypes);
 
   const TypeIcon = ({ typeInfo }: { typeInfo: TypeWithMultiplier }) => (
-    <div className="flex flex-col items-center text-center w-20">
+    <div className="flex flex-col items-center text-center w-20 mb-2">
       <Image
         src={`/icons/${typeInfo.type}.svg`}
         alt={`${typeInfo.type} type`}
@@ -71,7 +71,7 @@ const TypeEffectivenessDisplay = ({
     types: TypeWithMultiplier[];
   }) => (
     <>
-      <h1 className="text-3xl font-bold mb-6">{title}</h1>
+      <h1 className="text-3xl font-bold mb-2">{title}</h1>
       <div className="flex flex-wrap">
         {types.length > 0 ? (
           types.map((typeInfo, index) => (
