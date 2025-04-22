@@ -178,7 +178,9 @@ export default function Home() {
                   alt={`${type} type`}
                   width={54}
                   height={54}
-                  className="transform transition-transform hover:scale-105 cursor-pointer mt-1"
+                  className="select-none transform transition-transform hover:scale-105 cursor-pointer mt-1"
+                  onContextMenu={e => e.preventDefault}
+                  draggable={false}
                 />
                 <span className="mt-2">{type}</span>
               </div>
