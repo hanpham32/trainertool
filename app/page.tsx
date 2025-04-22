@@ -102,7 +102,7 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container h-screen mx-auto p-4">
       <div
         className={`${pokemonImages.length > 0 ? "lg:flex" : "flex flex-col items-center"}`}
       >
