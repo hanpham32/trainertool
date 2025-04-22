@@ -16,7 +16,7 @@ interface PokemonCarouselProps {
 
 export function PokemonCarousel({imageUrls}: PokemonCarouselProps) {
   return (
-    <Carousel className="w-full max-w-xs my-4" opts={{loop:false, startIndex: 4}}>
+    <Carousel className="w-[50%] max-w-xs my-4" opts={{loop:false, startIndex: 4}}>
       <CarouselContent>
         {imageUrls.map((imageUrl, index) => (
           <CarouselItem key={index}>
