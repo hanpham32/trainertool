@@ -1,31 +1,21 @@
+# PokeToolbox
+
+A tool to look up a pokemon's effectiveness and other stats.
+
+Future support:
+
+- Pokemon GO
+- PokemonMMO
+
+### Credits:
+
+- Icons: https://github.com/duiker101/pokemon-type-svg-icons
+- Pokemon API: https://pokeapi.co/
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Roadmap
-
-- [ ] mobile responsive
-  - [ ] search bar
-  - [ ] carousel
-  - [ ] types layout
-- [ ] UI
-  - [ ] find a better font..
-  - [ ] layout of type selection more symmetrical
-  - [ ] "the tool every pokemon trainer needs"
-- [ ] features/fix
-  - [x] fix: correct weakness and resistance for pokemon of two types
-  - [~] url slug
-  - [ ] show pokemon of selected types
-  - [ ] search: find pokemons of certain yield types
-  - [ ] search: auto scroll to new section
-  - [ ] data: strengths
-  - [ ] credits and api references section
-  PokeMMO
-  - [ ] data: where to find that wild pokemon
-  - [ ] data: what nature is preferred
-  - [ ] data: what base stat to improve
-  - [ ] data: move information
-  - [ ] Gaia node integration
-
-## Getting Started
+## Local Development
 
 First, run the development server:
 
