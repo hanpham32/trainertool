@@ -6,11 +6,17 @@ import { useEffect, useState, useRef } from "react";
 export default function SearchBar() {
   const [pokemonNames, setPokemonNames] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const {searchTerm, setSearchTerm} = useSearch();  // the finalized search term
-  const [currentSearchTerm, setCurrentSearchTerm] = useState("");
+  const {searchTerm, goToPokemon} = useSearch();
+  const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const suggestionRef = useRef(null);
+
+  useEffect(() => {
+    if (searchTerm && inputValue === "") {
+      setInputValue(searchTerm);
+    }
+  }, [searchTerm])
 
   // handles fetch pokemon from JSON file
   useEffect(() => {
@@ -47,7 +53,7 @@ export default function SearchBar() {
   // TODO filters suggestion based on input
   const handleInputChange = (e) => {
     const value = e.target.value;
-    setCurrentSearchTerm(value);
+    setInputValue(value);
     if (value.trim()) {
       const filteredSuggestions = pokemonNames
         .filter(name => name.toLowerCase().includes(value.toLowerCase()))
@@ -60,19 +66,17 @@ export default function SearchBar() {
     }
   }
 
-  // TODO helper function to capitalize first character
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  // TODO handles select a suggestion
   const handleSelectSuggestion = (suggestion) => {
-    setSearchTerm(suggestion);
+    goToPokemon(suggestion);
+    setInputValue(suggestion)
     setSuggestions([]);
     setShowSuggestions(false);
   }
 
-  // TODO handles key navigation in suggestions
   const handleKeyDown = (e) => {
     const { key } = e;
     if (key === 'Escape') {
@@ -80,29 +84,30 @@ export default function SearchBar() {
     }
     if (key === 'Enter') {
       e.preventDefault();
-      handleSearch();
+      handleSearch(e);
     }
   }
 
   // handles search when user hits "Enter" or Search icon
-  const handleSearch = () => {
-    if (currentSearchTerm.trim()) {
-      setSearchTerm(currentSearchTerm.trim());
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (inputValue.trim()) {
+      goToPokemon(inputValue.trim());
       setShowSuggestions(false);
     }
   }
 
   return (
-    <div className="relative my-4 w-full">
+    <div className="relative my-4 w-100">
       <div className="flex items-center p-2 bg-white rounded-lg shadow">
         <Input
           type="text"
           placeholder={isLoading ? "loading ..." : "search for a pokemon"}
           className="flex-1 text-gray-900 bg-transparent border-none focus:ring-0 mr-2"
-          value={currentSearchTerm}
+          value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => currentSearchTerm.trim() && suggestions.length > 0 && setShowSuggestions(true)}
+          onFocus={() => inputValue.trim() && suggestions.length > 0 && setShowSuggestions(true)}
           disabled={isLoading}
         />
         <div onClick={handleSearch} className="cursor-pointer">

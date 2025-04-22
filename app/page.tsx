@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { PokemonTypeString } from "@/utils/PokemonType";
-import { PokemonType } from "@/utils/PokemonType";
 import { MyPokedex } from "@/utils/MyPokedex";
 import SearchBar from "@/components/SearchBar";
 import PokeMMOSwitch from "@/components/PokeMMOSwitch";
@@ -10,8 +9,9 @@ import { useSearch } from "@/contexts/SearchContext";
 import { Pokemon } from "pokedex-promise-v2";
 import { PokemonCarousel } from "@/components/PokemonCarousel";
 import EffortBadge from "@/components/EffortBadge";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Type } from "lucide-react";
 import TypeEffectivenessDisplay from "@/components/TypeEffectivenessDisplay";
+import { pokemonTypes } from "@/utils/PokemonType";
 
 const statNameMap = {
   hp: "HP",
@@ -24,66 +24,50 @@ const statNameMap = {
 
 export default function Home() {
   const myPokedex = new MyPokedex();
-  const { searchTerm, setSearchTerm } = useSearch();
-  const [currentTypes, setSelectedTypes] = useState<PokemonTypeString[]>([]);
-  const pokemonTypeInfo = PokemonType.getInstance();
+  const { searchTerm, currentTypes, goToTypes, reset } = useSearch();
   const [pokemonJson, setPokemonJson] = useState<Pokemon>(null);
   const [pokemonImages, setPokemonImages] = useState<string[]>([]);
   const [evYields, setEvYields] = useState(null);
+  const [pokemonDataTypes, setPokemonDataTypes] = useState<PokemonTypeString[]>([]);
+  const isOnPokemonPage = !!searchTerm;
+  const activeTypes = isOnPokemonPage ? pokemonDataTypes : currentTypes;
+
 
   useEffect(() => {
-    async function searchPokemon(name) {
-      if (!name) return;
+    async function searchPokemon(name: string) {
+      if (!name) {
+        setPokemonJson(null);
+        setPokemonImages([]);
+        setEvYields(null);
+        setPokemonDataTypes([]);
+        return;
+      }
       try {
         const pokemon = await myPokedex.getPokemonByName(name);
-        if (!pokemon) {
-          resetPokemonData();
-          return;
-        }
+        console.log(pokemon);
+        if (!pokemon) return;
         const [imageUrls, types, yields] = await Promise.all([
           myPokedex.getAllImages(pokemon),
           myPokedex.getPokemonTypes(pokemon),
           myPokedex.getEVYield(pokemon),
         ]);
-
-        setSelectedTypes(types);
-        setEvYields(yields);
-        setPokemonImages(imageUrls);
         setPokemonJson(pokemon);
+        setPokemonImages(imageUrls);
+        setEvYields(yields);
+        setPokemonDataTypes(types);
       } catch (error) {
-        console.error("Failed to fetch Pokemon:", error);
-        setPokemonImages([]);
         setPokemonJson(null);
-        setSelectedTypes([]);
+        setPokemonImages([]);
+        setEvYields(null);
+        setPokemonDataTypes([]);
       }
     }
     searchPokemon(searchTerm);
   }, [searchTerm]);
 
-  const pokemonTypes: PokemonTypeString[] = [
-    "bug",
-    "dark",
-    "dragon",
-    "electric",
-    "fairy",
-    "fighting",
-    "fire",
-    "flying",
-    "ghost",
-    "grass",
-    "ground",
-    "ice",
-    "normal",
-    "poison",
-    "psychic",
-    "rock",
-    "steel",
-    "water",
-  ];
-
-  const getNewTypeSelection = (currentTypes, clickedType) => {
+  const getNewTypeSelection = (currentTypes, clickedType): PokemonTypeString[] => {
     if (currentTypes.includes(clickedType)) {
-      return currentTypes.filter((t) => t !== clickedType);
+      return currentTypes.filter((t: PokemonTypeString) => t !== clickedType);
     } else if (currentTypes.length < 2) {
       return [...currentTypes, clickedType];
     } else {
@@ -91,26 +75,31 @@ export default function Home() {
     }
   };
 
-  // TODO handles manual selection of types
   const handleTypeSelection = (type: PokemonTypeString) => {
-    if (searchTerm) {
-      setSearchTerm("");
+    if (isOnPokemonPage) {
+      // clear pokemon ui
       setPokemonJson(null);
+      setPokemonImages([]);
+      setEvYields(null);
+      setPokemonDataTypes([]);
+      goToTypes([type]);
+    } else {
+      let newTypes: PokemonTypeString[];
+      if (currentTypes.includes(type)) {
+        newTypes = currentTypes.filter(t => t !== type);
+      } else if (currentTypes.length < 2){
+        newTypes = [...currentTypes, type];
+      }
+      goToTypes(newTypes);
     }
-    setSelectedTypes(getNewTypeSelection(currentTypes, type));
-    resetPokemonData();
-  };
-
-  const resetPokemonData = () => {
-    setPokemonImages([]);
-    setPokemonJson(null);
-    setEvYields(null);
   };
 
   const handleReset = () => {
-    setSearchTerm("");
-    setSelectedTypes([]);
-    resetPokemonData();
+    setPokemonImages([]);
+    setPokemonJson(null);
+    setEvYields(null);
+    setPokemonDataTypes([]);
+    reset();
   };
 
   return (
@@ -140,7 +129,10 @@ export default function Home() {
 
           {pokemonJson && (
             <div className="text-center">
-              <h1 className="text-3xl font-bold mb-6">{pokemonJson.name.charAt(0).toUpperCase() + pokemonJson.name.slice(1)}</h1>
+              <h1 className="text-3xl font-bold mb-6">
+                {pokemonJson.name.charAt(0).toUpperCase() +
+                  pokemonJson.name.slice(1)}
+              </h1>
             </div>
           )}
 
@@ -170,16 +162,16 @@ export default function Home() {
         <div
           className={`${pokemonImages.length > 0 ? "w-full md:w-1/2" : "w-full max-w-2xl"} md:pr-4`}
         >
-          <h1 className="text-3xl font-bold mb-3 text-center">Pokemon Type</h1>
+          {/* Pokemon types section */}
+          <h1 className="text-3xl charizardfont-bold mb-3 text-center">Pokemon Type</h1>
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 p-2">
             {pokemonTypes.map((type) => (
               <div
                 key={type}
-                className={`m-1 flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${
-                  currentTypes.includes(type)
-                    ? "bg-gray-200"
-                    : "hover:bg-gray-50"
-                }`}
+                className={`m-1 flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${activeTypes.includes(type)
+                  ? "bg-gray-200"
+                  : "hover:bg-gray-50"
+                  }`}
                 onClick={() => handleTypeSelection(type)}
               >
                 <Image
@@ -193,8 +185,11 @@ export default function Home() {
               </div>
             ))}
           </div>
-          {currentTypes.length > 0 && (
-            <TypeEffectivenessDisplay selectedTypes={currentTypes} />
+          {!isOnPokemonPage && currentTypes.length > 0 && (
+            <TypeEffectivenessDisplay selectedTypes={currentTypes as PokemonTypeString[]} />
+          )}
+          {isOnPokemonPage && pokemonDataTypes.length > 0 && (
+            <TypeEffectivenessDisplay selectedTypes={pokemonDataTypes as PokemonTypeString[]} />
           )}
         </div>
       </div>

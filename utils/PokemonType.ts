@@ -1,4 +1,4 @@
-const pokemonTypes: PokemonTypeString[] = [
+export const pokemonTypes: PokemonTypeString[] = [
   "bug",
   "dark",
   "dragon",

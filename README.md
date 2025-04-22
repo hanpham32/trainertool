@@ -8,10 +8,17 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
   - [ ] types layout
 - [ ] UI
   - [ ] find a better font..
+  - [ ] layout of type selection more symmetrical
+  - [ ] "the tool every pokemon trainer needs"
 - [ ] features/fix
-  - [ ] fix: correct weakness and resistance for pokemon of two types
+  - [x] fix: correct weakness and resistance for pokemon of two types
+  - [~] url slug
+  - [ ] show pokemon of selected types
   - [ ] search: find pokemons of certain yield types
+  - [ ] search: auto scroll to new section
   - [ ] data: strengths
+  - [ ] credits and api references section
+  PokeMMO
   - [ ] data: where to find that wild pokemon
   - [ ] data: what nature is preferred
   - [ ] data: what base stat to improve
