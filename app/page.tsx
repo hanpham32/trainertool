@@ -44,7 +44,6 @@ export default function Home() {
       }
       try {
         const pokemon = await myPokedex.getPokemonByName(name);
-        console.log(pokemon);
         if (!pokemon) return;
         const [imageUrls, types, yields] = await Promise.all([
           myPokedex.getAllImages(pokemon),
