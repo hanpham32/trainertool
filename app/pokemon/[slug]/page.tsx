@@ -1,6 +1,6 @@
 import Home from "@/app/page";
 
-export default function PokemonPage({params}: {params: {slug: string}}) {
+export default function PokemonPage({params}: {params: Promise<{slug: string}>}) {
   return <Home />
 }
 
