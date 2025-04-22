@@ -50,7 +50,6 @@ export const SearchContextProvider = ({ children }) => {
   );
 
   const goToPokemon = (name: string) => {
-    console.log("I'm retrieving a pokemon...");
     if (!name) return;
     router.push(`/pokemon/${encodeURIComponent(name.toLowerCase())}`);
   };
