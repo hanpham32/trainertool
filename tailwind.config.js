@@ -12,6 +12,9 @@ module.exports = {
         'primary-foreground': '#ffffff',
         // other colors as needed
       },
+      screens: {
+        'phone': {'max': '410px'},
+      },
     },
   },
   plugins: [],
