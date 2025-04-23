@@ -12,6 +12,7 @@ import EffortBadge from "@/components/EffortBadge";
 import { RotateCcw, Type } from "lucide-react";
 import TypeEffectivenessDisplay from "@/components/TypeEffectivenessDisplay";
 import { pokemonTypes } from "@/utils/PokemonType";
+import Footer from "@/components/Footer";
 
 const statNameMap = {
   hp: "HP",
@@ -103,96 +104,102 @@ export default function Home() {
 
   return (
     <div className="container h-screen mx-auto p-4">
-      <div
-        className={`${pokemonImages.length > 0 ? "lg:flex" : "flex flex-col items-center"}`}
-      >
-        <div
-          className={`${pokemonImages.length > 0 ? "w-full md:w-1/2" : "w-full"} flex flex-col items-center`}
-        >
-          <div className="flex items-center">
-            <SearchBar />
-            <RotateCcw
-              className="mx-4 hover:cursor-pointer"
-              onClick={handleReset}
-            />
-          </div>
-
-          {pokemonImages.length > 0 && <div className="h-5"></div>}
-
-          {/* Pokemon information section */}
-          {pokemonImages.length > 0 ? (
-            <PokemonCarousel imageUrls={pokemonImages} />
-          ) : (
-            searchTerm && <p>No images found</p>
-          )}
-
-          {pokemonJson && (
-            <div className="text-center">
-              <h1 className="text-3xl font-bold mb-6">
-                {pokemonJson.name.charAt(0).toUpperCase() +
-                  pokemonJson.name.slice(1)}
-              </h1>
-            </div>
-          )}
-
-          {evYields && (
-            <div className="flex flex-wrap justify-center gap-2 mt-3">
-              <h1 className="w-full text-2xl font-bold text-center">
-                EV Yields:
-              </h1>
-              <div className="flex flex-wrap justify-center gap-2">
-                {Object.entries(evYields).map(([statName, effortValue]) => {
-                  if ((effortValue as number) >= 1) {
-                    return (
-                      <EffortBadge
-                        key={statName}
-                        type={statNameMap[statName]}
-                        value={effortValue as number}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            </div>
-          )}
-        </div>
+      <div>
 
         <div
-          className={`${pokemonImages.length > 0 ? "w-full md:w-1/2" : "w-full max-w-2xl"} md:pr-4`}
+          className={`${pokemonImages.length > 0 ? "lg:flex" : "flex flex-col items-center"}`}
         >
-          {/* Pokemon types section */}
-          <h1 className="text-3xl charizardfont-bold mb-3 text-center">Pokemon Type</h1>
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 p-2">
-            {pokemonTypes.map((type) => (
-              <div
-                key={type}
-                className={`m-1 flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${activeTypes.includes(type)
-                  ? "bg-gray-200"
-                  : "hover:bg-gray-50"
-                  }`}
-                onClick={() => handleTypeSelection(type)}
-              >
-                <Image
-                  src={`/icons/${type}.svg`}
-                  alt={`${type} type`}
-                  width={54}
-                  height={54}
-                  className="select-none transform transition-transform hover:scale-105 cursor-pointer mt-1"
-                  onContextMenu={e => e.preventDefault}
-                  draggable={false}
-                />
-                <span className="mt-2">{type}</span>
+          <div
+            className={`${pokemonImages.length > 0 ? "w-full md:w-1/2" : "w-full"} flex flex-col items-center`}
+          >
+            <div className="flex items-center">
+              <SearchBar />
+              <RotateCcw
+                className="mx-4 hover:cursor-pointer"
+                onClick={handleReset}
+              />
+            </div>
+
+            {pokemonImages.length > 0 && <div className="h-5"></div>}
+
+            {/* Pokemon information section */}
+            {pokemonImages.length > 0 ? (
+              <PokemonCarousel imageUrls={pokemonImages} />
+            ) : (
+                searchTerm && <p>No images found</p>
+              )}
+
+            {pokemonJson && (
+              <div className="text-center">
+                <h1 className="text-3xl font-bold mb-6">
+                  {pokemonJson.name.charAt(0).toUpperCase() +
+                    pokemonJson.name.slice(1)}
+                </h1>
               </div>
-            ))}
+            )}
+
+            {evYields && (
+              <div className="flex flex-wrap justify-center gap-2 mt-3">
+                <h1 className="w-full text-2xl font-bold text-center">
+                  EV Yields:
+                </h1>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {Object.entries(evYields).map(([statName, effortValue]) => {
+                    if ((effortValue as number) >= 1) {
+                      return (
+                        <EffortBadge
+                          key={statName}
+                          type={statNameMap[statName]}
+                          value={effortValue as number}
+                        />
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-          {!isOnPokemonPage && currentTypes.length > 0 && (
-            <TypeEffectivenessDisplay selectedTypes={currentTypes as PokemonTypeString[]} />
-          )}
-          {isOnPokemonPage && pokemonDataTypes.length > 0 && (
-            <TypeEffectivenessDisplay selectedTypes={pokemonDataTypes as PokemonTypeString[]} />
-          )}
+
+          <div
+            className={`${pokemonImages.length > 0 ? "w-full md:w-1/2" : "w-full max-w-2xl"} md:pr-4`}
+          >
+            {/* Pokemon types section */}
+            <h1 className="text-3xl charizardfont-bold mb-3 text-center">Pokemon Type</h1>
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 p-2">
+              {pokemonTypes.map((type) => (
+                <div
+                  key={type}
+                  className={`m-1 flex flex-col items-center p-0 rounded-lg transition-all duration-200 ${activeTypes.includes(type)
+? "bg-gray-200"
+: "hover:bg-gray-50"
+}`}
+                  onClick={() => handleTypeSelection(type)}
+                >
+                  <Image
+                    src={`/icons/${type}.svg`}
+                    alt={`${type} type`}
+                    width={54}
+                    height={54}
+                    className="select-none transform transition-transform hover:scale-105 cursor-pointer mt-1"
+                    onContextMenu={e => e.preventDefault}
+                    draggable={false}
+                  />
+                  <span className="mt-2">{type}</span>
+                </div>
+              ))}
+            </div>
+            {!isOnPokemonPage && currentTypes.length > 0 && (
+              <TypeEffectivenessDisplay selectedTypes={currentTypes as PokemonTypeString[]} />
+            )}
+            {isOnPokemonPage && pokemonDataTypes.length > 0 && (
+              <TypeEffectivenessDisplay selectedTypes={pokemonDataTypes as PokemonTypeString[]} />
+            )}
+          </div>
         </div>
+      </div>
+      <div>
+        <Footer />
       </div>
     </div>
   );
